@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'model' => 'Instructor',
+    'plural' => 'Instructors',
+    'name_en' => 'Name (English)',
+    'name_ar' => 'Name (Arabic)',
+    'email' => 'Email',
+    'phone' => 'Phone',
+    'experience' => 'Experience',
+    'linkedIn' => 'LinkedIn',
+    'facebook' => 'Facebook',
+    'message' => 'Message',
+    'cv' => 'CV',
+    'image' => 'Image',
+    'desc' => 'Description',
+    'desc_ar' => 'Description (Arabic)',
+    'desc_en' => 'Description (English)',
+    'social_links' => 'Social Links',
+    'additional_info' => 'Additional Information',
+    'basic_info' => 'Basic Information',
+    'basic_info_desc' => 'Basic Information Description',
+    'description' => 'Description',
+    'additional' => 'Additional Information',
+];

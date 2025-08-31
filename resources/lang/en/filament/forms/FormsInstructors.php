@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'group' => 'Forms',
+    'model' => 'FormsInstructors',
+    'plural' => 'FormsInstructors',
+    'model_label' => 'Instructors',
+    'plural_label' => 'Instructors',
+    'create' => 'Create FormsInstructors',
+    'edit' => 'Edit FormsInstructors',
+    'delete' => 'Delete FormsInstructors',
+    'name_en' => 'Name (English)',
+    'name_ar' => 'Name (Arabic)',
+    'desc_en' => 'Description (English)',
+    'desc_ar' => 'Description (Arabic)',
+    'email' => 'Email',
+    'phone' => 'Phone',
+    'address' => 'Address',
+    'image' => 'Image',
+    'cv' => 'CV',
+    'experince' => 'Experince',
+    'linkedIn' => 'LinkedIn',
+    'facebook' => 'Facebook',
+    'message' => 'Message',
+    'accept' => 'Accept',
+    'reject' => 'Reject',
+    'website' => 'Website',
+];
