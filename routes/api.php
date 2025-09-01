@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\SocialController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ContactUsController;
@@ -18,6 +19,14 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
     Route::get('user', 'user')->middleware('auth:sanctum');
     Route::post('change-password', 'changePassword')->middleware('auth:sanctum');
 });
+
+
+// social
+Route::prefix('auth/google')->name('auth.google.')->group(function () {
+    Route::get('redirect', [SocialController::class, 'redirectToGoogle'])->name('redirect');
+    Route::get('callback', [SocialController::class, 'handleGoogleCallback'])->name('callback');
+});
+
 // instructors
 Route::controller(InstructorController::class)->group(function(){
     Route::post('instructor','instructor' );

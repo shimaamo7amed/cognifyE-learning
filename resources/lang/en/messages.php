@@ -25,5 +25,11 @@ return [
     'change_password_failed' => 'Failed to change your password.',
     'contactus.success' => 'Your inquiry has been sent successfully.',
     'contactus.failed' => 'Failed to send your inquiry. Please try again.',
+    'google' => [
+        'redirect_success' => 'Successfully redirected to Google.',
+        'redirect_failed' => 'Failed to redirect to Google. Please try again.',
+        'login_success' => 'Successfully logged in with Google.',
+        'login_failed' => 'Failed to log in with Google. Please try again.',
+    ]
 
 ];

@@ -24,6 +24,12 @@ return [
     'change_password_success' => 'تم تغيير كلمة المرور بنجاح.',
     'change_password_failed' => 'فشل في تغيير كلمة المرور.',
     'contactus.success' => 'تم إرسال استفسارك بنجاح.',
-    'contactus.failed' => 'فشل في إرسال استفسارك. يرجى المحاولة مرة أخرى.'
+    'contactus.failed' => 'فشل في إرسال استفسارك. يرجى المحاولة مرة أخرى.',
+    'google' => [
+        'redirect_success' => 'تم إعادة التوجيه إلى Google بنجاح.',
+        'redirect_failed' => 'فشل في إعادة التوجيه إلى Google. يرجى المحاولة مرة أخرى.',
+        'login_success' => 'تم تسجيل الدخول عبر Google بنجاح.',
+        'login_failed' => 'فشل في تسجيل الدخول عبر Google. يرجى المحاولة مرة أخرى.',
+    ]
 
 ];
