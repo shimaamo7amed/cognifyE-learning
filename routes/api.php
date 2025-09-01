@@ -18,6 +18,9 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
     Route::post('logout', 'logout')->middleware('auth:sanctum');
     Route::get('user', 'user')->middleware('auth:sanctum');
     Route::post('change-password', 'changePassword')->middleware('auth:sanctum');
+    Route::post('forget-password', 'forgetPassword');
+    Route::post('validate-otp', 'validateOtp');
+    Route::post('reset-password', 'resetPassword');
 });
 
 

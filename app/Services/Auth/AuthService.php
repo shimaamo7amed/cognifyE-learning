@@ -80,46 +80,102 @@ class AuthService
 
     public static function forgetPassword(array $data)
     {
+        if (empty($data['email'])) {
+            throw new \InvalidArgumentException('Email is required');
+        }
+
         $user = User::where('email', $data['email'])->first();
 
         if (!$user) {
-            return null;
+            // ما نكشفش أن الإيميل مش موجود لأسباب أمان
+            return true;
         }
 
-        $otp = $data['otp'] ?? rand(100000, 999999);
-        
-        $user->update(['otp' => $otp]);
-        
-        Mail::to($user->email)->send(new ResetPasswordCode($otp, $user->name, $user->email));
+        $otp = random_int(100000, 999999);
+        $otpExpiresAt = now()->addMinutes(10);
 
-        return $user;
+        $user->update([
+            'otp' => $otp,
+            'otp_expires_at' => $otpExpiresAt,
+            'otp_attempts' => 0
+        ]);
+
+        try {
+            self::sendVerificationEmail($user->email, $otp, $user->name);
+        } catch (\Exception $e) {
+            \Log::error('Failed to send password reset email: ' . $e->getMessage());
+            throw new \RuntimeException('Failed to send reset code');
+        }
+
+        return true;
     }
 
     public static function validateOtp(array $data)
     {
-        $user = User::where('otp', $data['otp'])->first();
-        
-        return $user ? true : false;
+        if (empty($data['email']) || empty($data['otp'])) {
+            return ['status' => false, 'message' => __('messages.email_and_otp_required')];
+        }
+
+        $user = User::where('email', $data['email'])
+                    ->where('otp', $data['otp'])
+                    ->first();
+
+        if (!$user) {
+            $user = User::where('email', $data['email'])->first();
+            if ($user) {
+                $user->increment('otp_attempts');
+                if ($user->otp_attempts >= 10) {
+                    $user->update(['otp' => null, 'otp_expires_at' => null]);
+                }
+            }
+            return ['status' => false, 'message' => __('messages.invalid_otp')];
+        }
+
+        if ($user->otp_expires_at && $user->otp_expires_at->isPast()) {
+            $user->update(['otp' => null, 'otp_expires_at' => null]);
+            return ['status' => false, 'message' => __('messages.otp_expired')];
+        }
+
+        return ['status' => true, 'message' => __('messages.otp_valid')];
     }
 
     public static function resetPassword(array $data)
     {
-        $user = User::where('email', $data['email'])->first();
 
-        if ($user && $user->otp == $data['otp']) {
-            $user->update([
-                'password' => Hash::make($data['password']),
-                'otp' => null
-            ]);
-            
-            // حذف جميع الـ tokens الحالية لإجبار المستخدم على تسجيل دخول جديد
-            $user->tokens()->delete();
-            
-            return $user;
+        $user = User::where('email', $data['email'])
+                    ->where('otp', $data['otp'])
+                    ->first();
+
+        if (!$user) {
+            return [
+                'status' => false,
+                'message' => __('messages.invalid_otp')
+            ];
         }
 
-        return null;
+        if ($user->otp_expires_at && $user->otp_expires_at->isPast()) {
+            $user->update(['otp' => null, 'otp_expires_at' => null]);
+            return ['status' => false, 'message' => __('messages.otp_expired')];
+        }
+
+        $user->update([
+            'password' => $data['password'],
+            'otp' => null,
+            'otp_expires_at' => null,
+            'otp_attempts' => 0
+        ]);
+
+        $user->tokens()->delete();
+
+        // try {
+        //     Mail::to($user->email)->send(new \App\Mail\PasswordChangedNotification($user->name));
+        // } catch (\Exception $e) {
+        //     \Log::error('Failed to send password changed notification: ' . $e->getMessage());
+        // }
+
+        return ['status' => true, 'message' => __('messages.password_reset_success'), 'user' => $user];
     }
+
 
     public static function changePassword( array $data)
     {
@@ -188,5 +244,4 @@ class AuthService
         return $user->fresh();
     }
 
-    
 }

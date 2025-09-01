@@ -8,8 +8,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\ValidateOTPRequest;
 use App\Http\Requests\Auth\VerifyEmailRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\ChangePasswordRequest;
+use App\Http\Requests\Auth\ForgetPasswordRequest;
 
 class AuthController extends Controller
 {
@@ -67,53 +70,24 @@ class AuthController extends Controller
         return apiResponse(true, [], __('messages.change_password_success'));
     }
 
-    // public function forgetPassword(Request $request): JsonResponse
-    // {
-    //     $request->validate([
-    //         'email' => 'required|email|exists:users,email'
-    //     ]);
+    public function forgetPassword(ForgetPasswordRequest $request)
+    {
+        AuthService::forgetPassword($request->validated());
+        return apiResponse(true, [], __('messages.otp_sent'));
+    }
 
-    //     $otp = rand(100000, 999999);
-    //     $user = AuthService::forgetPassword([
-    //         'email' => $request->email,
-    //         'otp' => $otp
-    //     ]);
 
-    //     if ($user) {
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'تم إرسال كود إعادة التعيين إلى بريدك الإلكتروني'
-    //         ], 200);
-    //     }
+    public function validateOtp(ValidateOTPRequest $request)
+    {
+        $result = AuthService::validateOtp($request->validated());
+        return apiResponse($result['status'], $result['data'] ?? [], $result['message']);
+    }
 
-    //     return response()->json([
-    //         'success' => false,
-    //         'message' => 'البريد الإلكتروني غير موجود'
-    //     ], 404);
-    // }
-
-    // public function resetPassword(Request $request): JsonResponse
-    // {
-    //     $request->validate([
-    //         'email' => 'required|email',
-    //         'otp' => 'required|string|size:6',
-    //         'password' => 'required|string|min:8|confirmed'
-    //     ]);
-
-    //     $user = AuthService::resetPassword($request->all());
-
-    //     if ($user) {
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'تم تغيير كلمة المرور بنجاح'
-    //         ], 200);
-    //     }
-
-    //     return response()->json([
-    //         'success' => false,
-    //         'message' => 'البيانات غير صحيحة'
-    //     ], 400);
-    // }
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        $result = AuthService::resetPassword($request->validated());
+        return apiResponse($result['status'], $result['data'] ?? [], $result['message']);
+    }
 
 
     // public function me(Request $request): JsonResponse

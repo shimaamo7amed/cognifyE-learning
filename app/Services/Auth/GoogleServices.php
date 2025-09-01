@@ -114,7 +114,7 @@ class GoogleServices
             'email_verified_at' => now(),
             'social_id' => $googleUser->id,
             'social_type' => 'Google',
-            'avatar' => $googleUser->avatar ?? null,
+            // 'image' => $googleUser->avatar ?? null,
             'password' => Hash::make(Str::random(40)),
         ]);
     }

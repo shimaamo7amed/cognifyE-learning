@@ -40,6 +40,7 @@ class User extends Authenticatable implements FilamentUser
         'facebook',
         'website',
         'otp_expires_at',
+        'otp_attempts',
         'experience',
         'cv',
         'status',
@@ -48,7 +49,9 @@ class User extends Authenticatable implements FilamentUser
         'id',
         'password',
         'remember_token',
-        'otp'
+        'otp',
+        'otp_attempts',
+        'otp_expires_at',
     ];
 
     protected function casts(): array
@@ -56,6 +59,8 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'otp_expires_at' => 'datetime',
+            'otp_attempts' => 'integer',
             'desc' => 'array',
         ];
     }
