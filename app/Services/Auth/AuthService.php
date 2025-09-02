@@ -11,6 +11,7 @@ use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class AuthService
 {
@@ -20,7 +21,7 @@ class AuthService
         Mail::to($email)->send(new SendOTP($otp, $name, $email));
     }
 
-    public static function register(array $data)
+    public  function register(array $data)
     {
         $data['otp'] = rand(100000, 999999);
         Cache::put('register_'.$data['email'], $data, now()->addMinutes(10));
@@ -28,7 +29,7 @@ class AuthService
         return true;
     }
 
-    public static function verifyEmail(array $data)
+    public  function verifyEmail(array $data)
     {
         $key = 'register_' . strtolower(trim($data['email']));
         $cachedData = Cache::get($key);
@@ -50,7 +51,7 @@ class AuthService
         return null;
     }
 
-    public static function login(array $data)
+    public  function login(array $data)
     {
         $field = filter_var($data['data'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
         $user = User::where($field, $data['data'])->first();
@@ -65,20 +66,20 @@ class AuthService
         return new UserResource($user);
     }
 
-    public static function logout($user)
+    public  function logout($user)
     {
         $user->currentAccessToken()->delete();
         return true;
     }
 
-    public static function logoutFromAllDevices($user)
+    public  function logoutFromAllDevices($user)
     {
         $user->tokens()->delete();
         return true;
     }
 
 
-    public static function forgetPassword(array $data)
+    public  function forgetPassword(array $data)
     {
         if (empty($data['email'])) {
             throw new \InvalidArgumentException('Email is required');
@@ -110,7 +111,7 @@ class AuthService
         return true;
     }
 
-    public static function validateOtp(array $data)
+    public  function validateOtp(array $data)
     {
         if (empty($data['email']) || empty($data['otp'])) {
             return ['status' => false, 'message' => __('messages.email_and_otp_required')];
@@ -139,7 +140,7 @@ class AuthService
         return ['status' => true, 'message' => __('messages.otp_valid')];
     }
 
-    public static function resetPassword(array $data)
+    public  function resetPassword(array $data)
     {
 
         $user = User::where('email', $data['email'])
@@ -177,7 +178,7 @@ class AuthService
     }
 
 
-    public static function changePassword( array $data)
+    public function changePassword(array $data)
     {
         $user = auth()->user();
         if (!Hash::check($data['currentPassword'], $user->password)) {
@@ -192,23 +193,65 @@ class AuthService
 
         return true;
     }
-    
-    public static function deleteMyAccount($slug)
+
+    public  function updateProfile(array $data)
     {
-        $user = User::where('slug', $slug)->first();
-
-        if ($user) {
-            // حذف جميع الـ tokens قبل حذف المستخدم
-            $user->tokens()->delete();
-            
-            // حذف المستخدم (soft delete إذا كان متاح)
-            $user->delete();
-            
-            return true;
+        $user = auth('sanctum')->user();
+        if (!$user) {
+            return null;
         }
-
-        return false;
+        if (!$user->hasRole('user')) {
+            return false;
+        }
+        $user->update($data);
+        return new UserResource($user->fresh());
     }
+
+    public function ChangeImage(array $data)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return null;
+        }
+        if (!$user->hasRole('user')) {
+            return false;
+        }
+        if ($user->image && Storage::disk('public')->exists($user->image)) {
+            Storage::disk('public')->delete($user->image);
+        }
+        if (!isset($data['image']) || !$data['image']->isValid()) {
+            return [
+                'status' => false,
+                'message' => 'Invalid image uploaded.'
+            ];
+        }
+        $path = $data['image']->store('users/images', 'public');
+        $user->image = $path;
+        $user->save();
+
+        return [
+            'image_url' => asset('storage/' . $path),
+        ];
+    }
+
+
+
+    // public static function deleteMyAccount($slug)
+    // {
+    //     $user = User::where('slug', $slug)->first();
+
+    //     if ($user) {
+    //         // حذف جميع الـ tokens قبل حذف المستخدم
+    //         $user->tokens()->delete();
+            
+    //         // حذف المستخدم (soft delete إذا كان متاح)
+    //         $user->delete();
+            
+    //         return true;
+    //     }
+
+    //     return false;
+    // }
 
     public static function checkPermission($user, $permission)
     {
@@ -235,13 +278,5 @@ class AuthService
         return null;
     }
 
-    public static function updateProfile($user, array $data)
-    {
-        unset($data['password'], $data['email'], $data['user_type']);
-
-        $user->update($data);
-
-        return $user->fresh();
-    }
 
 }

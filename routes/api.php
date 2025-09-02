@@ -21,6 +21,8 @@ Route::prefix('auth')->controller(AuthController::class)->group(function () {
     Route::post('forget-password', 'forgetPassword');
     Route::post('validate-otp', 'validateOtp');
     Route::post('reset-password', 'resetPassword');
+    Route::post('edit-personal-information', 'updateProfile')->middleware('auth:sanctum');
+    Route::post('edit-profile-photo', 'changeImage')->middleware('auth:sanctum');
 });
 
 

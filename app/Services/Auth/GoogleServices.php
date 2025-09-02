@@ -114,7 +114,8 @@ class GoogleServices
             'email_verified_at' => now(),
             'social_id' => $googleUser->id,
             'social_type' => 'Google',
-            // 'image' => $googleUser->avatar ?? null,
+            'phone' => $googleUser->phone ?? null,
+            'gender' => $googleUser->gender ?? null,
             'password' => Hash::make(Str::random(40)),
         ]);
     }
@@ -133,8 +134,6 @@ class GoogleServices
         while (User::where('userName', $username)->exists()) {
             $username = $baseUsername . $counter;
             $counter++;
-
-            // Safety check to prevent infinite loop
             if ($counter > 100) {
                 $username = $baseUsername . Str::random(8);
                 break;
@@ -146,7 +145,6 @@ class GoogleServices
 
     protected static function generateToken(User $user): string
     {
-        // Revoke existing tokens
         $user->tokens()->delete();
 
         Auth::login($user);

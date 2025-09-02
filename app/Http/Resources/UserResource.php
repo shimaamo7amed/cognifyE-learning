@@ -23,7 +23,8 @@ class UserResource extends JsonResource
             'country'    => $this->country,
             'gender'     => $this->gender,
             'userName'   => $this->userName,
-            'role'  => $this->user_type,
+            'image'      => asset('storage/' . $this->image),
+            'role'       => $this->user_type,
         ];
     }
 

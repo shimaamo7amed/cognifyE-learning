@@ -30,6 +30,22 @@ return [
         'redirect_failed' => 'Failed to redirect to Google. Please try again.',
         'login_success' => 'Successfully logged in with Google.',
         'login_failed' => 'Failed to log in with Google. Please try again.',
-    ]
+    ],
+    'profile_update_success' => 'Profile updated successfully.',
+    'profile_update_failed' => 'Failed to update profile.',
+    'forget_password_success' => 'A password reset link has been sent to your email.',
+    'forget_password_failed' => 'Failed to send password reset link. Please try again.',
+    'otp_sent' => 'The verification code has been sent to your email.',
+    'otp_failed' => 'Failed to send the verification code. Please try again.',
+    'invalid_otp' => 'The verification code is invalid or expired.',
+    'otp_expired' => 'The verification code has expired.',
+    'password_reset_success' => 'Password has been reset successfully.',
+    'email_and_otp_required' => 'Email and verification code are required.',
+    'image_update_success' => 'Image has been updated successfully.',
+    'image_update_failed' => 'Failed to update image. Please try again.',
+    'user_not_authenticated' => 'User is not authenticated.',
+    'access_denied' => 'Access denied.',
+    'profile_image_update_success' => 'Profile image has been updated successfully.',
+    'profile_image_update_failed' => 'Failed to update profile image. Please try again.'
 
 ];

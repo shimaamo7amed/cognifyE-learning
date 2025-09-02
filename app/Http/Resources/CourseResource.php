@@ -56,10 +56,10 @@ class CourseResource extends JsonResource
             'sale'=>$this->sale,
             'delivery_method' => $this->delivery_method,
             'payment_status' => $this->payment_status,
-            'image' => $this->image,
+            'image' => asset('storage/' . $this->image),
             'category' => $this->category
                 ? [
-                    'name' => $locale === 'ar' 
+                    'name' => $locale === 'ar'
                         ? ($this->category->name['ar'] ?? null) 
                         : ($this->category->name['en'] ?? null),
                     'slug' => $this->category->slug ?? null,

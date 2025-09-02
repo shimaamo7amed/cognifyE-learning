@@ -11,6 +11,8 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ValidateOTPRequest;
 use App\Http\Requests\Auth\VerifyEmailRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
+use App\Http\Requests\Auth\UpdateProfileRequest;
+use App\Http\Requests\UpdateProfilePhotoRequest;
 use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\ForgetPasswordRequest;
 
@@ -72,21 +74,48 @@ class AuthController extends Controller
 
     public function forgetPassword(ForgetPasswordRequest $request)
     {
-        AuthService::forgetPassword($request->validated());
+        $this->service->forgetPassword($request->validated());
         return apiResponse(true, [], __('messages.otp_sent'));
     }
 
 
     public function validateOtp(ValidateOTPRequest $request)
     {
-        $result = AuthService::validateOtp($request->validated());
+        $result = $this->service->validateOtp($request->validated());
         return apiResponse($result['status'], $result['data'] ?? [], $result['message']);
     }
 
     public function resetPassword(ResetPasswordRequest $request)
     {
-        $result = AuthService::resetPassword($request->validated());
+        $result = $this->service->resetPassword($request->validated());
         return apiResponse($result['status'], $result['data'] ?? [], $result['message']);
+    }
+    public function updateProfile(UpdateProfileRequest $request)
+    {
+
+        $result = $this->service->updateProfile($request->validated());
+        if ($result === null) {
+            return apiResponse(false, [], __('messages.user_not_authenticated'));
+        }
+
+        if ($result === false) {
+            return apiResponse(false, [], __('messages.access_denied'));
+        }
+
+        return apiResponse(true, $result, __('messages.profile_update_success'));
+    }
+    public function changeImage(UpdateProfilePhotoRequest $request)
+    {
+        $result = $this->service->changeImage($request->validated());
+        if ($result === null) {
+            return apiResponse(false, [], __('messages.user_not_authenticated'));
+        }
+
+        if ($result === false) {
+            return apiResponse(false, [], __('messages.access_denied'));
+        }
+
+        return apiResponse(true, $result, __('messages.profile_image_update_success'));
     }
 
 
